@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "value": "ksa-hr-app"
+    },
+    "environment": {
+      "value": "prod"
+    },
+    "appServicePlanSku": {
+      "value": "B2"
+    },
+    "postgresAdminLogin": {
+      "value": "ksahradmin"
+    },
+    "postgresAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.KeyVault/vaults/{kv-name}"
+        },
+        "secretName": "postgres-admin-password"
+      }
+    },
+    "tenantId": {
+      "value": "your-tenant-id"
+    },
+    "clientId": {
+      "value": "your-client-id"
+    }
+  }
+}
