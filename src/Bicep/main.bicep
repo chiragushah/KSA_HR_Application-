@@ -13,6 +13,9 @@ param environment string = 'prod'
 @description('SKU for App Service Plan')
 param appServicePlanSku string = 'B2'
 
+@description('Frontend application URL for CORS (optional)')
+param frontendAppUrl string = ''
+
 @description('PostgreSQL administrator login')
 param postgresAdminLogin string = 'ksahradmin'
 
@@ -89,7 +92,7 @@ resource apiAppService 'Microsoft.Web/sites@2022-09-01' = {
         }
         {
           name: 'AzureAd__Instance'
-          value: 'https://login.microsoftonline.com/'
+          value: environment().authentication.loginEndpoint
         }
         {
           name: 'AzureAd__Domain'
@@ -105,7 +108,7 @@ resource apiAppService 'Microsoft.Web/sites@2022-09-01' = {
       ]
       cors: {
         allowedOrigins: [
-          'https://${frontendAppService.properties.defaultHostName}'
+          frontendAppUrl
           'http://localhost:4200'
         ]
         supportCredentials: true
@@ -135,7 +138,7 @@ resource frontendAppService 'Microsoft.Web/sites@2022-09-01' = {
       appSettings: [
         {
           name: 'API_URL'
-          value: 'https://${apiAppService.properties.defaultHostName}/api'
+          value: 'https://${apiAppName}.azurewebsites.net/api'
         }
         {
           name: 'AZURE_AD_CLIENT_ID'
@@ -264,8 +267,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 }
 
 // Outputs
-output apiAppServiceUrl string = 'https://${apiAppService.properties.defaultHostName}'
-output frontendAppServiceUrl string = 'https://${frontendAppService.properties.defaultHostName}'
+output apiAppServiceUrl string = 'https://${apiAppName}.azurewebsites.net'
+output frontendAppServiceUrl string = 'https://${frontendAppName}.azurewebsites.net'
 output postgresServerFqdn string = postgresServer.properties.fullyQualifiedDomainName
 output appInsightsInstrumentationKey string = appInsights.properties.InstrumentationKey
 output keyVaultUri string = keyVault.properties.vaultUri
